@@ -2,7 +2,7 @@ package UserInterface;
 import scala.annotation.tailrec
 
 object UserInterface {
-  def main(args: Array[String]): Unit = {
+  /*def main(args: Array[String]): Unit = {
     @tailrec
     def printMenu(): Option[String] = {
       println("Choose an option")
@@ -16,7 +16,7 @@ object UserInterface {
       }
     }
     printMenu()
-  }
+  }*/
 }
 
 

@@ -1,49 +1,29 @@
+import java.io.File
+import scala.io.Source
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.ListBuffer
 
-/*
-case class Airport(id: String, ident: String, airport_type: String, name: String, latitude_deg: String, longitude_deg: String, elevation_ft: String, continent: String, iso_country: String, iso_region: String, municipality: String, scheduled_service: String, gps_code: String, iata_code: String, local_code: String, home_link: String, wikipedia_link: String, keywords: String)
+object Model {
+  case class Airport(id: Integer, ident: String, airport_type: String, name: String, latitude_deg: String, longitude_deg: String, elevation_ft: String, continent: String, iso_country: String, iso_region: String, municipality: String, scheduled_service: String, gps_code: String, iata_code: String, local_code: String, home_link: String, wikipedia_link: String, keywords: String)
+  case class Country(id: Integer, code: String, name: String, continent : String, wikipedia_link: String, keywords: String)
+  case class Runway(id: Integer, airport_ref: String, airport_ident: String, length_ft: String, width_ft: String, surface: String, lighted: String, closed: String, le_ident: String, le_latitude_deg: String, le_longitude_deg: String, le_elevation_ft: String, le_heading_degT: String, le_displaced_threshold_ft: String, he_ident: String, he_latitude_deg: String, he_longitude_deg: String, he_elevation_ft: String, he_heading_degT: String, he_displaced_threshold_ft: String)
 
-object SlickTables {
-  import slick.jdbc.PostgresProfile.api._
-  class AirportTable(tag: Tag) extends Table[Airport] (tag, Some("airports"), "Airport") {
-     def id = column[String]("airport_id", O.PrimaryKey, O.AutoInc)
+  var airports:HashMap[String, ListBuffer[Airport]]  = new HashMap()
+  var countries:HashMap[String, Country] = new HashMap()
+  var runways:HashMap[String, ListBuffer[Runway]] = new HashMap()
 
-     def airport_type = column[String]("airport_type")
-
-     def ident = column[String]("indent")
-
-     def name = column[String]("name")
-
-     def latitude_deg = column[String]("latitude_deg")
-
-     def longitude_deg = column[String]("longitude_deg")
-
-     def elevation_ft = column[String]("elevation_ft")
-
-     def continent = column[String]("continent")
-
-     def iso_country = column[String]("iso_country")
-
-     def iso_region = column[String]("iso_region")
-
-     def municipality = column[String]("municipality")
-
-     def scheduled_service = column[String]("scheduled_service")
-
-     def gps_code = column[String]("gps_code")
-
-     def iata_code = column[String]("iata_code")
-
-     def local_code = column[String]("local_code")
-
-     def home_link = column[String]("home_link")
-
-     def wikipedia_link = column[String]("wikipedia_link")
-
-     def keywords = column[String]("keywords")
-
-     override def * = (id, ident, airport_type, name, latitude_deg, longitude_deg, elevation_ft, continent, iso_country, iso_region, municipality, scheduled_service, gps_code, iata_code, local_code, home_link, wikipedia_link, keywords)<> (Airport.tupled, Airport.unapply)
-   }
-     //API entry point
-  lazy val airportTable = TableQuery[AirportTable]
+  def loadCountries(): Unit ={
+    val file = new File("./src/data/countries.csv")
+    val readBuffer = Source.fromFile(file)
+    var firstLine = true;
+    readBuffer
+      .getLines()
+      .drop(1)
+      .foreach(line => {
+        val cols = line.split(",").map(_.trim)
+        countries(cols(2).toLowerCase()) = Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " ")
+      })
+    readBuffer.close()
+  }
 }
-*/
+
