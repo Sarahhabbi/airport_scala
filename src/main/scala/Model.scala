@@ -10,18 +10,32 @@ object Model {
 
   var airports:HashMap[String, ListBuffer[Airport]]  = new HashMap()
   var countries:HashMap[String, Country] = new HashMap()
+  var iso_countries:HashMap[String, Country] = new HashMap()
   var runways:HashMap[String, ListBuffer[Runway]] = new HashMap()
 
   def loadCountries(): Unit ={
     val file = new File("./src/data/countries.csv")
     val readBuffer = Source.fromFile(file)
-    var firstLine = true;
     readBuffer
       .getLines()
       .drop(1)
       .foreach(line => {
         val cols = line.split(",").map(_.trim)
-        countries(cols(2).toLowerCase()) = Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " ")
+        countries.put(cols(2), Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " "))
+        iso_countries.put(cols(1), Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " "))
+      })
+    readBuffer.close()
+  }
+
+  def loadAirports(): Unit ={
+    val file = new File("./src/data/airports.csv")
+    val readBuffer = Source.fromFile(file)
+    readBuffer
+      .getLines()
+      .drop(1)
+      .foreach(line => {
+        val cols = line.split(",").map(_.trim)
+        airports(cols(2)) += Airport(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), cols(17))
       })
     readBuffer.close()
   }
