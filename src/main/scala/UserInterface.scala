@@ -1,4 +1,4 @@
-import Model.{airports, getIsoFromCountry, loadAirports, loadCountries, loadRunways, runways}
+import Model.{airports, getCountryFromIso, getIsoFromCountry, iso_countries, loadAirports, loadCountries, loadRunways, runways}
 
 import scala.annotation.tailrec
 
@@ -36,7 +36,7 @@ object UserInterface {
     searchCountryAirportsRunways(country, byCode)
   }
 
-  def displayQueryOptions(errorMessage: String = ""): Unit = {
+  def displayReportOptions(errorMessage: String = ""): Unit = {
     if (errorMessage != "") {
       println(errorMessage)
     }
@@ -59,7 +59,25 @@ object UserInterface {
 
   /* REPORT OPTION */
   def showTop10Countries() = {
-    /* TODO:showTop10Countries */
+    val sortedAirports = Model.airports.toSeq.sortBy(_._2.length)
+    val lowest = sortedAirports.filter(_._2.length == 1)
+    println(s"Countries with lowest number of airports")
+    lowest.foreach(airport => {
+      val iso_code = airport._1
+      val country = getCountryFromIso(iso_code)
+      val count = airport._2.length
+      println(s"---> $country: $count")
+    })
+
+    val top10Highest = sortedAirports.takeRight(10)
+    println(s"TOP 10 countries with highest number of airports")
+    top10Highest.foreach(airport => {
+      val iso_code = airport._1
+      val country = getCountryFromIso(iso_code)
+      val count = airport._2.length
+      println(s"---> $country: $count")
+    })
+
   }
 
   def showTypeRunways() = {
@@ -70,7 +88,7 @@ object UserInterface {
     /* TODO:showTop10RunwaysLatitude */
   }
 
-  def displayReportOption(errorMessage: String = ""): Unit = {
+  def displayQueryOptions(errorMessage: String = ""): Unit = {
     if (errorMessage != "") {
       println(errorMessage)
     }
@@ -103,7 +121,7 @@ object UserInterface {
     cmd match {
       case "0" => None /* EXIT APP*/
       case "1" => displayQueryOptions() /* QUERY */
-      case "2" => displayReportOption()
+      case "2" => displayReportOptions()
       case "_" => printMenu("ERROR: Your choice is not valid !")
     }
   }
@@ -113,5 +131,6 @@ object UserInterface {
     loadAirports()
     loadRunways()
     printMenu()
+    println(iso_countries)
   }
 }

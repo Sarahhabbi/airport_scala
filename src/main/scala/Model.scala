@@ -10,7 +10,7 @@ object Model {
 
   var airports:HashMap[String, ListBuffer[Airport]]  = new HashMap()
   var countries:HashMap[String, Country] = new HashMap()
-  var iso_countries:HashMap[String, Country] = new HashMap()
+  var iso_countries:HashMap[String, String] = new HashMap()
   var runways:HashMap[String, ListBuffer[Runway]] = new HashMap()
 
   def loadCountries(): Unit ={
@@ -22,7 +22,9 @@ object Model {
       .foreach(line => {
         val cols = line.split(",", -1).map(_.trim)
         val country = cols(2).slice(1, cols(2).length() - 1)
+        val iso_code = cols(1).slice(1, cols(1).length() - 1)
         countries.put(country, Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5)))
+        iso_countries.put(iso_code, country)
       })
     readBuffer.close()
   }
@@ -73,6 +75,10 @@ object Model {
     val countryObject = countries.getOrElse(country, null)
     val iso_code =  countryObject.code.slice(1,  countryObject.code.length() - 1)
     iso_code
+  }
+  def getCountryFromIso(iso_code: String): String = {
+    val iso_country = iso_countries.getOrElse(iso_code, null)
+    iso_country
   }
 }
 
