@@ -131,6 +131,5 @@ object UserInterface {
     loadAirports()
     loadRunways()
     printMenu()
-    println(iso_countries)
   }
 }
