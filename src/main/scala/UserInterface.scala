@@ -1,26 +1,27 @@
-import Model.{getIsoFromCountry, loadAirports, loadCountries}
+import Model.{airports, getIsoFromCountry, loadAirports, loadCountries, loadRunways, runways}
 
 import scala.annotation.tailrec
 
 object UserInterface {
 
-  def searchCountryAirports(country: String, byCode: Boolean): Unit = {
+  def searchCountryAirportsRunways(country: String, byCode: Boolean): Unit = {
     println(s"Results for $country")
-    if (byCode) {
-      /* select from code column */
-      println(s"Results for $country")
-      val selected_airports = Model.airports.getOrElse(country, null)
-      selected_airports.foreach(airport => {
-        println(s"---> $airport \n")
-      })
+    var iso_country = country
+    if (!byCode) {
+       iso_country = getIsoFromCountry(country)
     }
-    else {
-      val iso_country = getIsoFromCountry(country)
-      val selected_airports = Model.airports.getOrElse(iso_country, null)
-      selected_airports.foreach(airport => {
-        println(s"---> $airport \n")
-      })
-    }
+
+    val selected_airports = Model.airports.getOrElse(iso_country, null)
+    selected_airports.foreach(airport => {
+      println(s"---> $airport \n")
+      val airportRef = airport.id.toString
+      val airportRunways = Model.runways.getOrElse(airportRef.slice(1, airportRef.length() - 1), null)
+      if(airportRunways!=null){
+        airportRunways.foreach(airportRunway => {
+          println(s"  >> $airportRunway \n")
+        })
+      }
+    })
   }
 
   /* QUERY OPTION */
@@ -32,7 +33,7 @@ object UserInterface {
       println("Enter the country name")
     }
     val country = scala.io.StdIn.readLine()
-    searchCountryAirports(country, byCode)
+    searchCountryAirportsRunways(country, byCode)
   }
 
   def displayQueryOptions(errorMessage: String = ""): Unit = {
@@ -110,6 +111,7 @@ object UserInterface {
   def main(args: Array[String]): Unit = {
     loadCountries()
     loadAirports()
+    loadRunways()
     printMenu()
   }
 }
