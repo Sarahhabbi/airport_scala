@@ -1,31 +1,42 @@
-package UserInterface;
+import Model.{getIsoFromCountry, loadAirports, loadCountries}
+
 import scala.annotation.tailrec
 
 object UserInterface {
 
-  /* TODO: move to a service*/
-  def searchCountryAirportsAndRunways(country: String, byCode: Boolean): Unit = {
-    if(byCode){
+  def searchCountryAirports(country: String, byCode: Boolean): Unit = {
+    println(s"Results for $country")
+    if (byCode) {
       /* select from code column */
-      println(s"You choose to browse by country code : $country")
+      println(s"Results for $country")
+      val selected_airports = Model.airports.getOrElse(country, null)
+      selected_airports.foreach(airport => {
+        println(s"---> $airport \n")
+      })
     }
-    else{
-      /* select from name column */
-      println("You choose to browse by country name : $country")
+    else {
+      val iso_country = getIsoFromCountry(country)
+      val selected_airports = Model.airports.getOrElse(iso_country, null)
+      selected_airports.foreach(airport => {
+        println(s"---> $airport \n")
+      })
     }
-    /* display select result */
-    println("will display result of query")
   }
 
   /* QUERY OPTION */
   def showCountry(byCode: Boolean = false): Unit = {
-    println("Enter the country code")
+    if(byCode){
+      println("Enter the country code")
+    }
+    else{
+      println("Enter the country name")
+    }
     val country = scala.io.StdIn.readLine()
-    searchCountryAirportsAndRunways(country, byCode)
+    searchCountryAirports(country, byCode)
   }
 
   def displayQueryOptions(errorMessage: String = ""): Unit = {
-    if(errorMessage != ""){
+    if (errorMessage != "") {
       println(errorMessage)
     }
 
@@ -37,7 +48,7 @@ object UserInterface {
     val cmd = scala.io.StdIn.readLine()
     cmd match {
       case "0" => None /* EXIT APP*/
-      case "2.1" => showTop10Countries()/* QUERY */
+      case "2.1" => showTop10Countries() /* QUERY */
       case "2.2" => showTypeRunways()
       case "2.3" => showTop10RunwaysLatitude()
       case "_" => printMenu("ERROR: Your choice is not valid !")
@@ -49,14 +60,17 @@ object UserInterface {
   def showTop10Countries() = {
     /* TODO:showTop10Countries */
   }
+
   def showTypeRunways() = {
     /* TODO: showTypeRunways*/
   }
+
   def showTop10RunwaysLatitude() = {
     /* TODO:showTop10RunwaysLatitude */
   }
+
   def displayReportOption(errorMessage: String = ""): Unit = {
-    if(errorMessage != ""){
+    if (errorMessage != "") {
       println(errorMessage)
     }
 
@@ -67,7 +81,7 @@ object UserInterface {
     val cmd = scala.io.StdIn.readLine()
     cmd match {
       case "0" => None /* EXIT APP*/
-      case "1.1" => showCountry(byCode=true)/* QUERY */
+      case "1.1" => showCountry(byCode = true) /* QUERY */
       case "1.2" => showCountry()
       case "_" => printMenu("ERROR: Your choice is not valid !")
     }
@@ -76,7 +90,7 @@ object UserInterface {
 
   @tailrec
   def printMenu(errorMessage: String = ""): Unit = {
-    if(errorMessage != ""){
+    if (errorMessage != "") {
       println(errorMessage)
     }
 
@@ -87,15 +101,15 @@ object UserInterface {
     val cmd = scala.io.StdIn.readLine()
     cmd match {
       case "0" => None /* EXIT APP*/
-      case "1" => displayQueryOptions()/* QUERY */
+      case "1" => displayQueryOptions() /* QUERY */
       case "2" => displayReportOption()
       case "_" => printMenu("ERROR: Your choice is not valid !")
     }
   }
 
   def main(args: Array[String]): Unit = {
+    loadCountries()
+    loadAirports()
     printMenu()
   }
 }
-
-

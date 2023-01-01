@@ -20,24 +20,39 @@ object Model {
       .getLines()
       .drop(1)
       .foreach(line => {
-        val cols = line.split(",").map(_.trim)
-        countries.put(cols(2), Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " "))
-        iso_countries.put(cols(1), Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), " "))
+        val cols = line.split(",", -1).map(_.trim)
+        val country = cols(2).slice(1, cols(2).length() - 1)
+        countries.put(country, Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5)))
       })
     readBuffer.close()
   }
 
-  def loadAirports(): Unit ={
+  def loadAirports(): Unit = {
     val file = new File("./src/data/airports.csv")
     val readBuffer = Source.fromFile(file)
     readBuffer
       .getLines()
       .drop(1)
       .foreach(line => {
-        val cols = line.split(",").map(_.trim)
-        airports(cols(2)) += Airport(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), cols(17))
+        val cols = line.split(",", -1).map(_.trim)
+        val iso_country = cols(8).slice(1, cols(8).length() - 1)
+        val newAirport = Airport(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), "")
+        val keyExists = airports.getOrElse(iso_country, null)
+        if(keyExists == null){
+          airports.put(iso_country, ListBuffer(newAirport))
+        }
+        else {
+          airports(iso_country) += newAirport
+        }
       })
     readBuffer.close()
+  }
+
+  def getIsoFromCountry(country: String): String = {
+    println(s"country queried = $country")
+    val countryObject = countries.getOrElse(country, null)
+    println(s"iso found = $countryObject.code")
+    return countryObject.code
   }
 }
 
