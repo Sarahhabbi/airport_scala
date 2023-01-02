@@ -1,41 +1,11 @@
-import Model.{getIsoFromCountry, loadAirports, loadCountries}
+import Model.{loadAirports, loadCountries, loadRunways}
+import Service.{showCountry, showTop10Countries, showTop10RunwaysLatitude, showTypeRunways}
 
 import scala.annotation.tailrec
 
 object UserInterface {
 
-  def searchCountryAirports(country: String, byCode: Boolean): Unit = {
-    println(s"Results for $country")
-    if (byCode) {
-      /* select from code column */
-      println(s"Results for $country")
-      val selected_airports = Model.airports.getOrElse(country, null)
-      selected_airports.foreach(airport => {
-        println(s"---> $airport \n")
-      })
-    }
-    else {
-      val iso_country = getIsoFromCountry(country)
-      val selected_airports = Model.airports.getOrElse(iso_country, null)
-      selected_airports.foreach(airport => {
-        println(s"---> $airport \n")
-      })
-    }
-  }
-
-  /* QUERY OPTION */
-  def showCountry(byCode: Boolean = false): Unit = {
-    if(byCode){
-      println("Enter the country code")
-    }
-    else{
-      println("Enter the country name")
-    }
-    val country = scala.io.StdIn.readLine()
-    searchCountryAirports(country, byCode)
-  }
-
-  def displayQueryOptions(errorMessage: String = ""): Unit = {
+  def displayReportOptions(errorMessage: String = ""): Unit = {
     if (errorMessage != "") {
       println(errorMessage)
     }
@@ -56,20 +26,7 @@ object UserInterface {
     printMenu()
   }
 
-  /* REPORT OPTION */
-  def showTop10Countries() = {
-    /* TODO:showTop10Countries */
-  }
-
-  def showTypeRunways() = {
-    /* TODO: showTypeRunways*/
-  }
-
-  def showTop10RunwaysLatitude() = {
-    /* TODO:showTop10RunwaysLatitude */
-  }
-
-  def displayReportOption(errorMessage: String = ""): Unit = {
+  def displayQueryOptions(errorMessage: String = ""): Unit = {
     if (errorMessage != "") {
       println(errorMessage)
     }
@@ -102,7 +59,7 @@ object UserInterface {
     cmd match {
       case "0" => None /* EXIT APP*/
       case "1" => displayQueryOptions() /* QUERY */
-      case "2" => displayReportOption()
+      case "2" => displayReportOptions()
       case "_" => printMenu("ERROR: Your choice is not valid !")
     }
   }
@@ -110,6 +67,7 @@ object UserInterface {
   def main(args: Array[String]): Unit = {
     loadCountries()
     loadAirports()
+    loadRunways()
     printMenu()
   }
 }

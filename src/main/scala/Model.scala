@@ -10,7 +10,7 @@ object Model {
 
   var airports:HashMap[String, ListBuffer[Airport]]  = new HashMap()
   var countries:HashMap[String, Country] = new HashMap()
-  var iso_countries:HashMap[String, Country] = new HashMap()
+  var iso_countries:HashMap[String, String] = new HashMap()
   var runways:HashMap[String, ListBuffer[Runway]] = new HashMap()
 
   def loadCountries(): Unit ={
@@ -22,7 +22,9 @@ object Model {
       .foreach(line => {
         val cols = line.split(",", -1).map(_.trim)
         val country = cols(2).slice(1, cols(2).length() - 1)
+        val iso_code = cols(1).slice(1, cols(1).length() - 1)
         countries.put(country, Country(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5)))
+        iso_countries.put(iso_code, country)
       })
     readBuffer.close()
   }
@@ -36,7 +38,7 @@ object Model {
       .foreach(line => {
         val cols = line.split(",", -1).map(_.trim)
         val iso_country = cols(8).slice(1, cols(8).length() - 1)
-        val newAirport = Airport(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), "")
+        val newAirport = Airport(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), cols(17))
         val keyExists = airports.getOrElse(iso_country, null)
         if(keyExists == null){
           airports.put(iso_country, ListBuffer(newAirport))
@@ -48,11 +50,35 @@ object Model {
     readBuffer.close()
   }
 
+  def loadRunways(): Unit = {
+    val file = new File("./src/data/runways.csv")
+    val readBuffer = Source.fromFile(file)
+    readBuffer
+      .getLines()
+      .drop(1)
+      .foreach(line => {
+        val cols = line.split(",", -1).map(_.trim)
+        val airport_ref = cols(1).slice(1, cols(1).length() - 1)
+        val newRunway = Runway(cols(0).toInt, cols(1), cols(2), cols(3), cols(4), cols(5), cols(6), cols(7), cols(8), cols(9), cols(10), cols(11), cols(12), cols(13), cols(14), cols(15), cols(16), cols(17), cols(18), cols(19))
+        val keyExists = runways.getOrElse(airport_ref, null)
+        if(keyExists == null){
+          runways.put(airport_ref, ListBuffer(newRunway))
+        }
+        else {
+          runways(airport_ref) += newRunway
+        }
+      })
+    readBuffer.close()
+  }
+
   def getIsoFromCountry(country: String): String = {
-    println(s"country queried = $country")
     val countryObject = countries.getOrElse(country, null)
-    println(s"iso found = $countryObject.code")
-    return countryObject.code
+    val iso_code =  countryObject.code.slice(1,  countryObject.code.length() - 1)
+    iso_code
+  }
+  def getCountryFromIso(iso_code: String): String = {
+    val iso_country = iso_countries.getOrElse(iso_code, null)
+    iso_country
   }
 }
 
